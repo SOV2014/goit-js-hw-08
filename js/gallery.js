@@ -1,24 +1,3 @@
-const galleryContainer = document.querySelector(".gallery");
-
-const galleryItems = images
-  .map(({ preview, original, description }) => {
-    return `
-    <li class="gallery-item">
-      <a class="gallery-link" href="${original}">
-        <img
-          class="gallery-image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
-        />
-      </a>
-    </li>
-  `;
-  })
-  .join("");
-
-galleryContainer.innerHTML = galleryItems;
-
 const images = [
   {
     preview:
@@ -85,39 +64,41 @@ const images = [
   },
 ];
 
-const galleryContainer = document.querySelector(".gallery");
+const gallery = document.querySelector(".gallery");
 
-const galleryItems = images
-  .map(({ preview, original, description }) => {
-    return `
-    <li class="gallery-item">
-      <a class="gallery-link" href="${original}">
+gallery.insertAdjacentHTML("afterbegin", createMarcup(images));
+gallery.addEventListener("click", hundlerGetEl);
+
+function hundlerGetEl(evt) {
+  evt.preventDefault();
+
+  if (evt.target.nodeName !== "IMG") {
+    return;
+  } else if (evt.target.nodeName === "IMG") {
+    const imgsrc = evt.target.dataset.source;
+    const instance = basicLightbox.create(
+      `<img class="big-img" src="${imgsrc}">`
+    );
+
+    instance.show();
+  }
+}
+
+function createMarcup(arr) {
+  return arr
+    .map(
+      ({ preview, original, description }) =>
+        `<li class="gallery-item js-gallery-item">
+        <a class="gallery-link" href="${original}">
         <img
-          class="gallery-image"
-          src="${preview}"
-          data-source="${original}"
-          alt="${description}"
+        class="gallery-image"
+        src="${preview}"
+        data-source="${original}"
+        alt="${description}"
+
         />
-      </a>
-    </li>
-  `;
-  })
-  .join("");
-
-galleryContainer.innerHTML = galleryItems;
-
-galleryContainer.addEventListener("click", (event) => {
-  event.preventDefault();
-
-  if (event.target.nodeName !== "IMG") return;
-
-  const largeImageURL = event.target.dataset.source;
-  openModal(largeImageURL);
-});
-
-function openModal(imageURL) {
-  const instance = basicLightbox.create(`
-    <img src="${imageURL}" width="800" height="600">
-  `);
-  instance.show();
+  </a>
+</li>`
+    )
+    .join("");
 }
